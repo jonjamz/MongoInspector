@@ -1,3 +1,15 @@
+var origCollection = Meteor.Collection,
+    activeCollections = [];
+
+Meteor.Collection = function (name, options) {
+    var instance = new origCollection(name, options);
+    activeCollections.push({
+        name: name,
+        instance: instance
+    });
+    return instance
+};
+
 if (Meteor.isClient) {
 
     Template.body.helpers({
@@ -9,7 +21,7 @@ if (Meteor.isClient) {
 
             if (localhost === -1) {
                 return false;
-            } else if (cordova   === true) {
+            } else if (cordova === true) {
                 return false;
             } else {
                 return true;
@@ -17,33 +29,15 @@ if (Meteor.isClient) {
 
         },
         MongoInspector_collections: function () {
-              
-            // Detecting Collections automatically 
-            // Forked from shanedonnelly1 
+            return activeCollections;
 
-            var collections = [];
-
-            for (var globalObject in window) { 
-                if (globalObject === "webkitStorageInfo") {
-                    continue;
-                }
-                if (window[globalObject] instanceof Meteor.Collection) {
-                    collections.push({
-                        "name": globalObject,
-                        // "collection": window[globalObject]
-                    });
-                }
-            }
-
-            return collections;
-            
         }
     });
 
     Template.body.events({
         'click .MongoInspector_row': function () {
             var collectionName = this.name;
-            var thisCollection = window[collectionName];
+            var thisCollection = this.instance;
             console.log(thisCollection.find().fetch());
         },
         'click .MongoInspector_header': function () {
@@ -54,7 +48,7 @@ if (Meteor.isClient) {
     Template.MongoInspector_collection.helpers({
         collectionCount: function () {
             var collectionName = this.name;
-            var thisCollection = window[collectionName];
+            var thisCollection = this.instance;
             return thisCollection.find().count();
         }
     });

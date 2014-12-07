@@ -1,14 +1,12 @@
 <body>
 	{{#if MongoInspector_enabled}}
-		<div id="MongoInspector">	
+		<div id="MongoInspector">
 			{{> MongoInspector_header}}
-			{{#if MongoInspector_collections}}
-				{{#each MongoInspector_collections}}
-					{{> MongoInspector_collection}}
-				{{/each}}
+			{{#each MongoInspector_collections}}
+				{{> MongoInspector_collection}}
 			{{else}}
 				{{> MongoInspector_setup}}
-			{{/if}}
+			{{/each}}
 		</div>
 	{{/if}}
 </body>
